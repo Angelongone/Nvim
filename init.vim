@@ -7,6 +7,28 @@ if empty(glob('~/.config/nvim/autoload/plug.vim'))
 	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Quickly Run
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+map q :call CompileRunGcc()<CR>
+
+func! CompileRunGcc()
+    exec "w" 
+    if &filetype == 'c' 
+        exec '!g++ % -o %<'
+"        exec '! ./%<'
+        exec '!time ./%<'
+    elseif &filetype == 'cpp'
+        exec '!g++ % -o %<'
+        exec '!time ./%<'
+    elseif &filetype == 'python'
+        exec '!time python %'
+    elseif &filetype == 'sh'
+        :!time bash % 	
+	endif 
+endfunc
+
 inoremap jj <esc>
 set nu
 set sm
@@ -27,12 +49,11 @@ set wrap
 set number
 set ruler
 set rulerformat=%15(%c%V\ %p%%%)
-
 set showmatch
-
 set cursorline
-"set cuc
-set listchars "html代码补全
+set listchars 
+" 相对行号
+set relativenumber
 "
 """""""""""""" 将空格键当作快捷键 """"""""""""""""""
 let mapleader=" "
@@ -84,8 +105,8 @@ let g:airline_symbols.crypt     = '?'
 let g:airline_symbols.linenr    = '⭡'
 let g:airline_symbols.branch    = '⭠'
 " 切换 buffer
-nnoremap [b :bp<CR>
-nnoremap ]b :bn<CR>
+nnoremap ,f :bp<CR>
+nnoremap .f :bn<CR>
 
 " 关闭当前 buffer
 noremap <C-p> :w<CR>:bd<CR>
@@ -110,6 +131,8 @@ map <leader>9 :b 9<CR>
 colorscheme gruvbox	
 set background=dark
 
+"""""""vim-table-mode"""""""
+"启动 <leader>tm
 """""""markdown"""""""
 map <leader>mak :MarkdownPreview<CR>
 map <leader>mas :MarkdownPreviewStop<CR>
@@ -160,7 +183,7 @@ let g:NERDToggleCheckAllLines = 1
 """"""""""vim-surround""""""""""
 "更改"" 为 '' cs"'
 """"""""""tagbar""""""""""
-nmap <F8> :TagbarToggle<CR>
+nmap TT :TagbarToggle<CR>
 """"""""""coc.vim""""""""""
 set encoding=utf-8
 set hidden
@@ -209,6 +232,12 @@ nmap <leader>rn <Plug>(coc-rename)
 "格式化代码块
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
+"自动添加参数
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+"跳到下一个参数 可结合使用
+nmap <silent> ,g <Plug>(coc-diagnostic-prev)
+nmap <silent> .g <Plug>(coc-diagnostic-next)
 
 
 "++++++++++++插件+++++++++++++++++++++"
@@ -232,13 +261,13 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 """"""markdown-preview""""""
-Plug 'iamcco/markdown-preview.vim'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 """"""coc-nvim""""""
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 """"""彩虹括号""""""
 Plug 'kien/rainbow_parentheses.vim'
 """"""缩进线""""""
-"Plug 'Yggdroot/indentLine'
+Plug 'Yggdroot/indentLine'
 """"""agit""""""
 Plug 'cohama/agit.vim'
 """"""vim-table-mode""""""
